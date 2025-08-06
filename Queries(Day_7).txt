@@ -1,0 +1,134 @@
+                    -- Day 7
+/*                    
+create table events(
+id int auto_increment primary key,
+name varchar(100),
+date datetime,
+created_at timestamp default current_timestamp
+);
+-- TIMESTAMP: The data type used to store date and time.
+-- DEFAULT CURRENT_TIMESTAMP: Automatically assigns the current date and time when a new row is inserted.
+
+Insert into events(name,date)
+values('meeting','2025-01-15 10:30:00'),
+('conference','2023-02-10 09:00:00');
+
+-- select*from events;
+
+select id,name,date,day(date) as event_date from events;
+
+select id,name,date,year(date) as event_date from events;
+
+-- to add 30 days from current day 
+select id,name,date,date + INTERVAL 30 DAY as date_plus_30 from events;
+
+select id,name,date,date - INTERVAL 30 DAY as date_plus_30 from events;
+
+select id,name, DATE_FORMAT(date,'%W %M''%e %Y') as formatted_date from events;
+-- W- week(day), M-month , e- date, y-year
+
+select id,name, DATE_FORMAT(date,'%h:%i %p') as time_12th_format from events;
+-- h-hour, i-minute, p-am/pm
+
+-- Times on conversion indian time to US
+-- we need to install convert time on utility in mysql
+
+select 
+'2025-01-15 10:30:00' as my_time,
+CONVERT_TZ('2025-01-15 10:30:00', 'America/New_york','Asia/Kolkata') as IST_time;
+
+*/
+      -- Regex
+create table regex_samples(
+id int auto_increment primary key,
+text varchar(100)
+);
+
+Insert into regex_samples(text)
+values('apple'),
+('banana'),
+('running'),
+('grape'),
+('123ab');
+
+-- word which starts with letter'a'
+select * from regex_samples 
+where text REGEXP '^a';
+
+-- word which ends with letter'e'
+select * from regex_samples 
+where text REGEXP 'e$';
+
+-- word which starts with number
+select * from regex_samples 
+where text REGEXP '^[0-9]';
+
+-- word which starts with 'ing'
+select * from regex_samples 
+where text REGEXP 'ing$';
+
+-- is any same letter comes repeatedly
+select * from regex_samples 
+where text REGEXP '(.)\\1';
+
+-- Match a string that contains only letters (A–Z or a–z) from start to end, with at least one character.
+select * from regex_samples 
+where text REGEXP '^[A-Za-z]+$';
+
+-- words that contain exactly  5 letter
+select * from regex_samples 
+where text REGEXP '^.{5}$';
+
+-- apple or banana 
+select * from regex_samples 
+where text REGEXP '^(apple|banana)$';
+
+-- start with number , {3}- number must be start with 3 digit followes by charater 
+select * from regex_samples 
+where text REGEXP '^[0-9]{3}[A-Za-z]+$';
+
+/*
+-- yyyy-mm-dd
+
+select * from regex_samples 
+where text REGEXP '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]';
+
+*/
+
+-- matching names containing only letters and spaces
+
+select * from regex_samples 
+where text REGEXP '^[A-Za-z ]+$';
+    
+    
+    
+    
+    
+    
+    
+    -- commit and rollback
+CREATE TABLE accounts (
+  acc_id int PRIMARY KEY,
+  acc_holder varchar(100),
+  Balance Decimal(10,2)
+);
+
+INSERT INTO accounts(acc_id,acc_holder,Balance)
+VALUES (1, 'Clark', '5000.00');
+
+start Transaction; -- or give BEGIN
+
+update accounts SET balance = balance - 1000 
+where acc_id = 1;
+
+select *from accounts;
+
+
+rollback;
+select *from accounts;
+
+-- commit;  after updation once you give commit you cant able to rollback
+
+-- grant and revoke(admin commands) watch in video
+
+

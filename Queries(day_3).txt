@@ -1,0 +1,167 @@
+            -- Day 3
+-- eg : primary key(stu_id , course_id,course_name) this combination allows a unique pair whereas if we remove 
+-- course_name from this primary key(stu_id , course_id) still it act as a unique pair so this is not "minimal key"
+
+-- eg: primary key(stu_id , course_id) in this if we remove any one from this it breaks a primary key so its minimal key
+
+-- theory concepts : natural key, surogate key
+-- natural key is naturally has a unique key property but need to set as a primary key eg :aadar number
+-- if someone typed same aadar number then it shouldnt be acceptable so that we set this as a primary key
+
+--- surogate key  - eg:in table we have column cus_name,start_date,end_date , we cant set as this 3 as a primary key but 
+-- when a situition arise compulsory we need to set a primary key ,in that we can use  a surrogate key which is auto-increment
+-- surrogate key can be set as primary key or non primary key,it deponds on scenerio
+
+-- all primary key  and all composite primary key is a canditate key
+/*
+
+PRIMARY KEY(stu_id); -- both primary key and canditate key 
+PRIMARY KEY(stu_id,course_id); -- both composite key and canditate key 
+-- compulsory that 2 key or 1 key forms a unqiue ley then it a canditate key
+PRIMARY KEY(stu_id,course_id,course_name); -- course_name is not a canditate key, becoz with and without course_name can a unique key
+
+-- all primary key is a super key, all canditate key is a super key 
+-- PRIMARY KEY(stu_id,course_id,course_name); with or without course_name this combination called as a  super_key but this combination not a canditate key
+-- compulsory that 2 key or 1 key forms a unqiue ley then it a super key
+*/
+
+--aggregation 
+
+CREATE TABLE customers(
+id INT PRIMARY KEY,
+name VARCHAR(20),
+amt DECIMAL(10,2),
+trans_status VARCHAR(20),
+food VARCHAR(20)
+);
+
+INSERT INTO customers(id,name,amt,trans_status,food)
+VALUES(1,'shan','1900.00','pending','pizza'),
+(2,'rakshi','3973.00','completed','burger'),
+(3,'sakthi','9273.00','failed','pizza'),
+(4,'vino',NULL,'failed','pizza');
+
+/*
+SELECT COUNT(*) FROM customers
+WHERE trans_status = 'completed';
+
+
+SELECT COUNT(*) FROM customers
+WHERE trans_status = 'completed' and amt = '200.00';
+
+
+SELECT COUNT(*) FROM customers
+WHERE trans_status IN('completed','pending') ;
+
+
+SELECT COUNT(*) FROM customers
+WHERE trans_status = 'completed' or trans_status = 'pending';
+
+
+SELECT COUNT(*) FROM customers
+WHERE trans_status NOT IN('completed','pending');
+
+
+SELECT SUM(amt) FROM customers
+WHERE trans_status='completed';
+
+
+
+-- ALias name 
+SELECT SUM(amt) AS total_transaction FROM customers
+WHERE trans_status='completed';
+
+
+SELECT MIN(amt) AS min_transaction FROM customers;
+
+SELECT MAX(amt) AS max_transaction FROM customers;
+
+
+SELECT AVG(amt) AS avg_transaction FROM customers;
+
+
+--GROUP BY, having
+
+SELECT food,
+SUM(amt) AS total_revenue
+FROM customers
+GROUP BY food;
+
+
+
+SELECT food,
+SUM(amt) AS total_revenue
+FROM customers
+GROUP BY food
+HAVING SUM(amt) > 4000;
+-- --aggretation + condition - having , only condition with 1 column -  where
+*/
+-- case when
+-- hot code meaning?
+
+/*
+SELECT
+
+case
+    when 8 > 10 then 'true'
+    when 10 > 8 then 'true'
+    else 'false'
+end as result
+*/
+/*
+SELECT 
+   name,amt,
+   CASE 
+      WHEN amt > 5000 THEN 'High spender'
+      WHEN amt BETWEEN 2000 AND 4000  THEN 'Medium spender'
+      WHEN amt <= 2000 THEN 'Low spender'
+    ELSE 'no data'
+   end AS Spending
+FROM customers;
+
+ --  after THEN we can give coln name also 
+ -- in situation we need to contact email if phone_num doesnt exist
+ -- here order matters for this when in case {watch time : 2:38:57 }
+SELECT 
+   name,
+   CASE 
+     WHEN phone_num is NULL THEN email
+     ELSE phone_num
+   end As contact
+FROM customers;
+
+       -- LIMIT
+ SELECT * FROM customers LIMIT 2; -- in mysql
+SELECT TOP 2 * FROM customers; -- in server 
+*/
+
+-- null handling
+
+/*
+SELECT count(*) FROM customers  
+WHERE phone_num = NULL ; -- error becoz we cant use operators like ==,< ,> 
+
+
+SELECT count(*) FROM customers  
+WHERE amt IS NULL ; 
+
+SELECT count(*) FROM customers  
+WHERE amt IS NOT NULL ;
+
+-- eg: we can use "where" in situition like name = 'null' this is not a NULL, becoz null is stored  inside a string
+
+SELECT id,name,amt,trans_status,food
+FROM customers
+WHERE name is NULL or amt is NULL or trans_status is NULL;
+*/
+-- COALESCE -  to replace or handle null values
+
+SELECT id,name,amt, COALESCE(amt,0.00) AS coalesce_val
+FROM customers;
+
+-- coalesce replace null value with actual first not null value
+-- eg: coalesce(null,null,0.00,null,11) - res : 0.00
+
+
+-- in coalesce we can give many argument , there is a another way as same as coalesce
+-- IFNULL(amt,0.00) - this takes only 2 argument only

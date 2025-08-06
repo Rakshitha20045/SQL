@@ -1,0 +1,229 @@
+                -- Day 4
+/*
+CREATE TABLE EMPLOYEE (
+  id int,
+  name varchar(15),
+  email varchar(20),
+  city varchar(20),
+  phone_num varchar(20),
+);
+
+Insert into employee(id,name,email,city,phone_num)
+values (1,'mafi kumari','abc@gmail.com','tirupur','8378449999'),
+(2,'mahi sharma','cvc@gmail.com','chennai','987249999'),
+(3,'neha kumari','fgc@gmail.com','tirupur','6378449999');
+
+CREATE TABLE amt(
+id int,
+amount DECIMAL(10,2)
+);
+Insert into amt(id,amount)
+values(2,'2345.00'),
+(3,'1345.00'),
+(2,'2895.00'),
+(4,'6345.00');
+
+         -- string handling
+select 
+len(name) as name_length,
+upper(city) as city_upper,
+lower(name) as emp_name,
+concat(name,' - ',city,' - ',' TN') as name_city,
+substring(name,1,4) as name_prefix,
+trim('    chennai    ') as trimmed_city,
+ltrim('  tirupur') as left_trim,
+rtrim('banglore  ') as right_trim,
+-- LPAD(name,10,'*') as left_padding_name -- mysql
+-- RPAD(name,10,'*') as right_padding_name -- mysql
+replace(name,' ','_') as update_name,
+-- INSTR(name,'a') as position_of_a -- first occurance of 'a' ,in mysql
+CHARINDEX('a', lower(name)) AS position_of_a, --case sensitive
+left(name,6)as first_6_char,
+right(name,6)as last_6_char,
+reverse(name)as reversed_name,
+-- format(987654332,2) as formated_number --in mysql 
+format(987654332,'n2') as formated_number,
+upper(concat(name,' - ',city,' - ',' TN')) as name_city_upper --func inside another func is also possible
+From employee;
+-- length(name) as name_length; --in my_sql
+*/
+           -- sub queries
+
+/*
+select name,
+(select max(amount)from amt) as max_order_amt
+
+from employee;
+
+
+select distinct id --remove duplicate rows from the result set and return only unique values.
+from amt
+where amount >=2000;
+
+select name
+from employee
+where id in (
+select distinct id
+from amt
+where amount >=2000
+);
+
+                 -- in vs exist
+                 
+-- after 'where' we want to give condition , after exists we dont want to give any condition
+select name 
+from employee
+where exists(
+select * from employee where city = 'tirupur'
+);
+
+-- if tirupur is exist then it return all emp name, if it is not exist then it wont any name
+
+select name 
+from employee
+where not exists(
+select * from employee where city = 'mumbai'
+);
+
+
+     -- we can implemnent this in join also
+select name,city,
+(select sum(amount)
+from amt a
+where a.id = e.id) as total_orders
+from employee e;
+
+-- when we use join and when we use sub queries like this
+-- for small datas subqueries is enough, while for big data join is efficient
+
+
+
+-- we can able to give subquery after "from", becoz this sub query can consider as table 
+
+-- we can write this when we need to know clear abt what is the coln name 
+-- we can remove coln name in outer select , whereas we dont need to remove logic in inner select
+-- if we add new logic in inner query then we need to add that coln name in outer select too
+select 
+name_length,
+city_upper,
+emp_name               
+from (
+select 
+len(name) as name_length,
+upper(city) as city_upper,
+lower(name) as emp_name
+from employee 
+)as subquery;
+
+
+            -- view
+
+CREATE TABLE EMP (
+  id int,
+  name varchar(15),
+  email varchar(20),
+  city varchar(20),
+  amt DECIMAL(10,2)
+);
+
+Insert into emp(id,name,email,city,amt)
+values (1,'mafi kumari','abc@gmail.com','tirupur','8375.00'),
+(2,'mahi sharma','cvc@gmail.com','chennai','1267.00'),
+(3,'neha kumari','fgc@gmail.com','tirupur','3200.00');
+
+GO -- for server
+create view high_earners as
+select id,name,amt
+from emp
+where amt > 2500;
+ 
+GO 
+select * from high_earners;
+
+-- doubt : when we need to create view vs table [watch:3:21:00]
+*/
+                       -- joins
+/*
+
+CREATE TABLE restaurant(
+  id int primary key,
+  name varchar(15) not null,
+  city varchar(20) not null,
+);
+
+Insert into restaurant(id,name,city)
+values (1,'cafe','tirupur'),
+(2,'dominos','chennai'),
+(3,'bistro','tirupur');
+
+CREATE TABLE orders(
+order_id int primary key,
+res_id int not null,
+order_date date
+);
+Insert into orders(order_id,res_id,order_date)
+values(1,1,'2025-07-10'),
+(2,1,'2025-07-11'),
+(3,2,'2025-07-12'),
+(4,4,'2025-07-13');
+
+select *from restaurant;
+select *from orders;
+
+-- inner join is normal join - common thing in both left and right table
+select 
+r.name as res_name,
+o.order_date 
+from restaurant r
+join orders o on r.id = o.res_id
+
+-- left join -- all content in left table + comman match content in both table
+select 
+r.name as res_name,
+o.order_date 
+from restaurant r
+left join orders o on r.id = o.res_id
+
+-- right join -- all content in right table + comman match content in both table
+
+select 
+r.name as res_name,
+o.order_date 
+from restaurant r
+right join orders o on r.id = o.res_id
+
+-- full join is not supported in mysql , they combine both left and right join using UNION 
+-- full join - display all content in both table which include match/doesnt match data's
+-- watch full join eg in time[3:40:00]
+
+-- eg: joining the more than one table can 
+
+select 
+r.name as res_name,
+o.order_date 
+from restaurant r
+join orders o on r.id = o.res_id
+join customers c on c.cust_id = o.customer_id
+
+*/
+-- self join (interview que)
+
+create table employees(
+  id int primary key,
+  name varchar(15) not null,
+  manager_id int null
+);
+
+Insert into employees(id,name,manager_id)
+Values (1,'alice',3),
+(2,'bob',3),
+(3,'charlie',null),
+(4,'diana',3); -- alice,bob,diana manager is charlie
+
+select *from employees;
+
+select
+e.name as employee_name,
+m.name as manager_name
+from employees e 
+left join employees m on e.manager_id = m.id; -- alice manager id is employeee id for that manager id 

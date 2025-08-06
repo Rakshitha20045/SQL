@@ -1,0 +1,146 @@
+-- Day 2 
+/*
+CREATE TABLE emp(
+emp_id INT PRIMARY KEY,
+name VARCHAR(20)
+);
+
+INSERT INTO emp(emp_id,name)
+VALUES(1,'rakshi');
+
+-- alter
+ALTER TABLE emp 
+ADD email VARCHAR(20);
+
+ALTER TABLE emp
+DROP COLUMN name;
+
+ALTER TABLE emp RENAME TO emp_12;
+
+desc emp_12; -- display the structure of a table
+
+-- SELECT * FROM emp;
+
+
+
+-- CREATE DATABASE classroom;
+-- USE classroom;
+-- SELECT DATABASE_NAME.TABLENAME;
+
+
+CREATE TABLE class(
+stu_id INT,
+staff_id INT ,
+loc VARCHAR(20),
+date DATETIME,
+fees DECIMAL(10,2),
+PRIMARY KEY(stu_id,staff_id) -- composite  key - more than 1 primary key
+);
+
+INSERT INTO class(stu_id,staff_id,loc,date,fees)
+VALUES(1,6,'tirupur','2025-12-29 08:00:00', 5000.00),
+(2,4,'chennai','2025-12-29 08:00:00', 3800.00),
+(3,5,'tirupur','2025-12-29 08:00:00', 4200.00);
+
+-- stu_id and staff_id cant be same at single row  
+-- like stu_id = 1, staff_id = 301 (acceptable),whereas this is acceptable stu_id = 1 and staff_id = 302
+
+
+desc class;
+*/
+
+
+/*
+SELECT * FROM class
+WHERE fees > 3500.00 -- WHERE
+-- ORDER by fees;
+ORDER by fees desc;  --ORDER by {asc,desc}
+
+
+SELECT * FROM class
+WHERE fees > 3500.00 and loc = 'chennai'
+ORDER by fees ;  
+
+-- eg for unique constraint
+
+CREATE TABLE users(
+user_id INT PRIMARY KEY,
+email VARCHAR(100) UNIQUE,
+feedback VARCHAR(20) NOT NULL
+);
+
+INSERT INTO users(user_id,email,feedback)
+VALUES (1,'user@gmail.com','good');
+
+INSERT INTO users(user_id,email,feedback)
+VALUES (2,NULL,'good');
+*/
+
+/*
+INSERT INTO users(user_id,email,feedback)
+VALUES (4,'user@gmail.com','good'); --doesnt allow duplicates
+
+*/
+-- primary key doesnt allow NULL and DUPLICATES, while UNIQUE key doesnt allow DUPLICATES AND but allow NULL
+-- SELECT *FROM users;
+
+/*
+-- eg for check constraint
+CREATE TABLE users_1(
+user_id INT PRIMARY KEY,
+email VARCHAR(100) UNIQUE,
+feedback VARCHAR(20) NOT NULL,
+payment DECIMAL(10,2)  CHECK(payment > 0)
+);
+
+INSERT INTO users_1(user_id,email,feedback,payment)
+VALUES (1,'user@gmail.com','good','-5000.00');
+
+SELECT *FROM users_1;
+*/
+--  eg for foreign KEY (if you use foreign key it must have in another table with primary or unique key)
+-- eg for default key
+CREATE TABLE party(
+user_id INT PRIMARY KEY,
+email VARCHAR(100) UNIQUE,
+feedback VARCHAR(20) DEFAULT 'not bad'
+);
+
+CREATE TABLE drink(
+user_id INT ,
+type VARCHAR(20) NOT NULL,
+FOREIGN KEY(user_id) REFERENCES party(user_id)
+);
+
+-- desc party;
+-- desc drink;
+INSERT INTO party(user_id,email)
+VALUES (1,'user@gmail.com'),
+(2,'rser@gmail.com');
+
+
+
+
+INSERT INTO drink(type,user_id)
+VALUES ('beer',1),
+('beer_classic',2);
+/*
+
+INSERT INTO drink(type,user_id)
+VALUES ('beer',2); -- error Cannot add or update a child row: a foreign key constraint fails (`sandbox_db`.`drink`, CONSTRAINT `drink_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `party` (`user_id`))
+
+DELETE FROM party
+WHERE user_id = 1; -- error Cannot add or update a child row: a foreign key constraint fails (`sandbox_db`.`drink`, CONSTRAINT `drink_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `party` (`user_id`))
+*/
+
+-- if we use 'ON DELETE CASCADE' to delete user=1 in party, it deletes from both table which is drink and party table 
+-- eg FOREIGN KEY(user_id) REFERENCES party(user_id) ON DELETE CASCADE
+
+DELETE FROM drink
+WHERE user_id = 1; 
+
+SELECT * FROM party;
+SELECT * FROM drink;
+
+-- watch 1:45:20 time to understand can we add drink_name in party table
+-- hard delete - permanently row gets deleted, sof del - add colm in drink table and set flag for just see the records which doesnt want

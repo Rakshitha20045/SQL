@@ -1,0 +1,212 @@
+                               -- Day 5
+-- window function
+-- window function in sql performs a calc accross a set of rows related to the current
+-- without changing the no. of rows in the res set
+/*
+create table zudio(
+trans_id INT primary key,
+store VARCHAR(5) not null,
+sales_amt DECIMAL(10,2) not null
+);
+
+Insert into zudio(trans_id,store,sales_amt)
+values (1,'A','200.00'),
+(2,'A','100.00'),
+(3,'A','150.00'),
+(4,'B','100.00'),
+(5,'B','450.00');
+         -- aggreate func
+select store , sum(sales_amt) as total_sales from zudio
+group by store; -- we need to see both total_sales and along with trans_id 
+
+-- select store ,trans_id  sum(sales_amt) as total_sales from zudio
+-- group by store,trans_id; --this shows trans_id but sum operation is not performed
+
+select trans_id,store,sales_amt,
+sum(sales_amt) over (partition by store) as total_sales -- partition by or order by or we can put both, we can leave empty  inside order :order()
+from zudio;
+
+
+-- 3 types in window func (aggregate,ranking,value) watch 3:53:38
+
+-- ranking func
+
+select trans_id, store, sales_amt,
+row_number() over(order by sales_amt desc) as rownumber
+from zudio;
+
+select trans_id, store, sales_amt,
+row_number() over(partition by store order by sales_amt desc) as rownumber
+from zudio;
+*/
+/*
+-- removing dup using row_number
+create table employees(
+  id int not null,
+  name varchar(15) not null,
+  manager_id int null
+);
+
+Insert into employees(id,name,manager_id)
+Values (1,'alice',3),
+(1,'alice',4),
+(3,'charlie',2),
+(4,'diana',3);
+
+ -- common table expressions (with ....)
+with emprank as(
+select id,name,manager_id,
+row_number() over(partition by id order by manager_id asc) as row_num
+from employees
+)
+
+
+select * from emprank where row_num = 1;
+*/ 
+        -- rank
+/*
+create table students(
+  stu_id int not null,
+  stu_name varchar(15) not null,
+  exam_score int null
+);
+
+Insert into students(stu_id,stu_name,exam_score)
+Values (1,'alice',93),
+(1,'alice',84),
+(3,'charlie',72),
+(4,'diana',93),
+(5,'dally',84);
+
+select stu_id,stu_id,exam_score,
+rank() over(order by exam_score desc) as score_rank from students; -- here we cant see 2nd rank becoz it consider 2nd one as 2nd 
+-- doubt arise why we cant use row_num here, watch : 4:19:15
+            -- dense rank
+select stu_id,stu_id,exam_score,
+dense_rank() over(order by exam_score desc) as score_rank from students; -- here we can able to see 2nd rank
+       -- perc : 0.0 to 1 [0 for high marks, 1 for low marks]
+select stu_id,stu_id,exam_score,
+percent_rank() over(order by exam_score desc) as perc_rank,
+rank() over(order by exam_score desc) as score_Rank
+from students
+-- percent_rank =  rank of the row-1/tot no. of rows - 1
+*/
+-- NTILE()
+/*
+create table emp(
+empl_id INT primary key,
+empl_name VARCHAR(5) not null,
+sales_amt DECIMAL(10,2) not null
+);
+
+Insert into emp(empl_id,empl_name,sales_amt)
+values (1,'A','2000.00'),
+(2,'Alice','1000.00'),
+(3,'Alia','1500.00'),
+(4,'Bob','4000.00'),
+(5,'david','5500.00'),
+(6,'frank','10500.00'),
+(7,'jack','7500.00'),
+(8,'eva','6500.00');
+
+select empl_id,empl_name,sales_amt,
+NTILE(4) over (order by sales_amt desc ) as performanceGrp
+from emp;
+
+--  value func
+-- lag()
+create table emp1(
+empl_id INT not null,
+empl_name VARCHAR(5) not null,
+salary DECIMAL(10,2) not null,
+year int not null
+);
+Insert into emp1(empl_id,empl_name,salary,year)
+values (1,'Alia','5000.00',2025),
+(2,'bob','4500.00',2023),
+(1,'Alia','5500.00',2026),
+(2,'bob','4950.00',2024),
+(3,'david','4500.00',2021);
+
+select *,
+lag(salary) over(partition by empl_id order by year ) as previousYearSalary
+from emp1;
+-- why it gives us none in previousYearSalary: watch 4:29:30 , becoz it starts again as a fresh with a new emp_id
+select *,
+lag(salary) over(partition by empl_id order by year ) as previousYearSalary,
+salary - lag(salary) over(partition by empl_id order by year ) as Salarychange
+from emp1;
+
+-- lead()
+create table productsales(
+empl_id INT not null,
+empl_name VARCHAR(5) not null,
+saleamt DECIMAL(10,2) not null,
+sale_date Date not null
+);
+Insert into productsales(empl_id,empl_name,saleamt,sale_date)
+values (1,'Alia','5000.00','2025-01-01'),
+(2,'bob','4500.00','2025-02-01'),
+(1,'Alia','5500.00','2025-03-01'),
+(2,'bob','4950.00','2025-04-02'),
+(3,'david','4500.00','2025-05-03'); -- 'YYYY-MM-DD'
+
+select empl_id,empl_name,sale_date,saleamt,
+lead(saleamt) over(order by sale_date) as NextSaleAmt
+from productsales;
+
+select empl_id,empl_name,sale_date,saleamt,
+lead(saleamt) over(order by sale_date) as NextSaleAmt,
+lead(saleamt) over(order by sale_date)  - saleamt as salediff
+from productsales;
+
+-- 1st_val
+create table empsalary(
+empl_id INT not null,
+empl_name VARCHAR(5) not null,
+department varchar(20) not null,
+salary DECIMAL(10,2) not null,
+year int not null
+);
+Insert into empsalary(empl_id,empl_name,department,salary,year)
+values (1,'Alia','soft dev','5000.00',2025),
+(2,'bob','ml ops','1500.00',2021),
+(1,'Alia','ml ops','5500.00',2026),
+(2,'bob','ml ops','1950.00',2024),
+(3,'david','soft dev','4500.00',2021);
+
+-- select *from empsalary;
+-- what is the starting salary
+
+select *,
+first_value(salary) over(partition by empl_id order by year) as firstsalary
+from empsalary;
+
+select *,
+last_value(salary) over(partition by empl_id order by year
+                       rows between current row and unbounded following ) as Lastsalary,
+last_value(salary) over(partition by empl_id order by year
+                       rows between current row and unbounded following ) - salary as diff   
+from empsalary;
+*/
+-- nth value
+-- in ml ops role who gets  the 2nd largest salary
+create table empsalary(
+empl_id INT not null,
+empl_name VARCHAR(10) not null,
+department varchar(20) not null,
+salary DECIMAL(10,2) not null,
+year int not null
+);
+Insert into empsalary(empl_id,empl_name,department,salary,year)
+values (1,'Alia','soft dev','5000.00',2025),
+(2,'bob','ml ops','1500.00',2021),
+(3,'dally','ml ops','5500.00',2026),
+(4,'eva','ml ops','1950.00',2024),
+(5,'berlin','soft dev','4500.00',2021);
+
+
+select *,
+nth_value(salary,2) over (partition by department order by salary desc
+ rows between unbounded preceding and unbounded following) as nth
+from empsalary;
