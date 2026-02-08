@@ -1,5 +1,5 @@
 # SQL
-# IN DOCX:
+# IN THIS PDF:
    1. sql commands
    2. Normalization
    3. Slowly Changing Dimension
