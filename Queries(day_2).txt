@@ -82,6 +82,7 @@ VALUES (4,'user@gmail.com','good'); --doesnt allow duplicates
 
 */
 -- primary key doesnt allow NULL and DUPLICATES, while UNIQUE key doesnt allow DUPLICATES but allow NULL
+-- UNIQUE key allows multiple NULL values , having both a primary key and a unique key in the same table does not make it a composite key
 -- SELECT *FROM users;
 
 /*
