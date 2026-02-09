@@ -81,7 +81,7 @@ INSERT INTO users(user_id,email,feedback)
 VALUES (4,'user@gmail.com','good'); --doesnt allow duplicates
 
 */
--- primary key doesnt allow NULL and DUPLICATES, while UNIQUE key doesnt allow DUPLICATES AND but allow NULL
+-- primary key doesnt allow NULL and DUPLICATES, while UNIQUE key doesnt allow DUPLICATES but allow NULL
 -- SELECT *FROM users;
 
 /*
