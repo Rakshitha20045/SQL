@@ -147,6 +147,7 @@ SELECT * FROM drink;
 -- hard delete - permanently row gets deleted, sof del - add colm in drink table and set flag for just see the records which doesnt want
 -- Eg: soft del 
 alter table drink add column is_delete boolean default False
+update drink set is_delete = true where user_id = 2
 
 
 -- default type
