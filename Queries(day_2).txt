@@ -145,3 +145,11 @@ SELECT * FROM drink;
 
 -- watch 1:45:20 time to understand can we add drink_name in party table
 -- hard delete - permanently row gets deleted, sof del - add colm in drink table and set flag for just see the records which doesnt want
+
+
+DROP TABLE IF EXISTS drivers; -- if -exists
+CREATE TABLE IF NOT EXISTS drivers (
+    id INT,
+    name VARCHAR(20)
+);
+
